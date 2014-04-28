@@ -91,6 +91,15 @@ public class MirroredBlobStore
     return mirrorStore.delete(new BlobId(mirrorBlobId));
   }
 
+  @Override
+  public boolean deleteHard(final BlobId blobId) {
+    final Blob blob = primaryStore.get(blobId);
+
+    final String mirrorBlobId = blob.getHeaders().get(getSecondaryBlobIdKey());
+    primaryStore.deleteHard(blobId);
+    return mirrorStore.deleteHard(new BlobId(mirrorBlobId));
+  }
+
   private String getSecondaryBlobIdKey() {
     return "blobId-in-store:" + blobStoreId;
   }
