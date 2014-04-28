@@ -18,7 +18,7 @@ import org.sonatype.nexus.blobstore.api.BlobId;
 
 /**
  * Stores blobs and blob headers in a two-deep directory tree, the first layer having {@link #TIER_1_MODULO}
- * directories, the second having {@link #TIER_2_MODULO}.  Blobs
+ * directories, the second having {@link #TIER_2_MODULO}.
  *
  * @since 3.0
  */
