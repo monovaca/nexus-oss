@@ -19,14 +19,13 @@ import java.nio.file.Files;
 import java.util.Map;
 import java.util.Random;
 
-import org.sonatype.gossip.Level;
 import org.sonatype.nexus.blobstore.api.Blob;
 import org.sonatype.nexus.blobstore.api.BlobStore;
 import org.sonatype.nexus.blobstore.file.FileBlobStore;
 import org.sonatype.nexus.blobstore.file.FlatDirectoryLocationPolicy;
 import org.sonatype.nexus.blobstore.file.JsonHeaderFormat;
 import org.sonatype.nexus.blobstore.file.SimpleFileOperations;
-import org.sonatype.nexus.blobstore.inmemory.InMemoryBlobStore;
+import org.sonatype.nexus.blobstore.locking.LockingBlobStore;
 import org.sonatype.nexus.blobstore.support.DummyLockProvider;
 import org.sonatype.nexus.blobstore.support.UuidBlobIdFactory;
 import org.sonatype.sisu.litmus.testsupport.TestSupport;
@@ -63,13 +62,14 @@ public class MirroredBlobStoreTest
     final MirroredBlobStore mirror1 = new MirroredBlobStore("A", store3, store1);
     final MirroredBlobStore mirror2 = new MirroredBlobStore("B", store4, store2);
 
-    final MirroredBlobStore mirror = new MirroredBlobStore("Umbrella", mirror1, mirror2);
+    final BlobStore root = new LockingBlobStore(new MirroredBlobStore("Root", mirror1, mirror2),
+        new DummyLockProvider());
 
-    final Blob blob = mirror.create(new ByteArrayInputStream(testData), testHeaders);
+    final Blob blob = root.create(new ByteArrayInputStream(testData), testHeaders);
 
-    mirror.get(blob.getId());
+    root.get(blob.getId());
 
-    mirror.delete(blob.getId());
+    root.delete(blob.getId());
   }
 
   private FileBlobStore createFileBlobStore() throws IOException {
@@ -78,7 +78,6 @@ public class MirroredBlobStoreTest
     store.setHeaderFormat(new JsonHeaderFormat());
     store.setFileLocationPolicy(new FlatDirectoryLocationPolicy());
     store.setBlobIdFactory(new UuidBlobIdFactory());
-    store.setLockProvider(new DummyLockProvider());
     return store;
   }
 }

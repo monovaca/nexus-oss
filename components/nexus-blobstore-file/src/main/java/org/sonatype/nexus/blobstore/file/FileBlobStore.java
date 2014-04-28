@@ -30,8 +30,6 @@ import org.sonatype.nexus.blobstore.api.BlobStoreException;
 import org.sonatype.nexus.blobstore.api.BlobStoreListener;
 import org.sonatype.nexus.blobstore.api.BlobStoreMetrics;
 import org.sonatype.nexus.blobstore.support.BlobIdFactory;
-import org.sonatype.nexus.blobstore.support.BlobLock;
-import org.sonatype.nexus.blobstore.support.BlobLockProvider;
 
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
@@ -59,8 +57,6 @@ public class FileBlobStore
 
   private HeaderFileFormat headerFormat;
 
-  private BlobLockProvider lockProvider;
-
   public FileBlobStore(final Path dataDirectory, BlobStoreListener listener) {
     Preconditions.checkNotNull(dataDirectory);
     this.dataDirectory = dataDirectory;
@@ -76,8 +72,7 @@ public class FileBlobStore
 
     // TODO: validate the headers
 
-    // Obtaining write locks for new blobs may be overcautious
-    try (final BlobLock contentLock = lockProvider.exclusiveLock(blobId)) {
+    try {
 
       // TODO: This isn't atomic, meaning that content might be stored without headers.
       // Maybe write out a 'remove' order that gets deleted at the end of this method?
@@ -107,28 +102,24 @@ public class FileBlobStore
   public Blob get(final BlobId blobId) {
     Preconditions.checkNotNull(blobId);
 
-    try (final BlobLock lock = lockProvider.readLock(blobId)) {
-
-      if (!fileOperations.exists(contentPath(blobId))) {
-        logger.debug("Attempt to access non-existent blob {}", blobId);
-        return null;
-      }
-
-      logger.debug("Accessing blob {}", blobId);
-      final FileBlob blob = new FileBlob(blobId, contentPath(blobId), headerPath(blobId));
-      if (listener != null) {
-        listener.blobAccessed(blob, null);
-      }
-      return blob;
+    if (!fileOperations.exists(contentPath(blobId))) {
+      logger.debug("Attempt to access non-existent blob {}", blobId);
+      return null;
     }
+
+    logger.debug("Accessing blob {}", blobId);
+    final FileBlob blob = new FileBlob(blobId, contentPath(blobId), headerPath(blobId));
+    if (listener != null) {
+      listener.blobAccessed(blob, null);
+    }
+    return blob;
   }
 
   @Override
   public boolean delete(final BlobId blobId) {
     Preconditions.checkNotNull(blobId);
 
-    try (final BlobLock lock = lockProvider.exclusiveLock(blobId)) {
-
+    try {
       final boolean delBlob = fileOperations.delete(contentPath(blobId));
       final boolean delHeader = fileOperations.delete(headerPath(blobId));
 
@@ -147,6 +138,11 @@ public class FileBlobStore
     catch (IOException e) {
       throw new BlobStoreException(e);
     }
+  }
+
+  @Override
+  public boolean deleteHard(final BlobId blobId) {
+    return delete(blobId);
   }
 
   @Override
@@ -179,8 +175,7 @@ public class FileBlobStore
 
     @Override
     public Map<String, String> getHeaders() {
-      try (final BlobLock lock = lockProvider.readLock(blobId);
-           final InputStream inputStream = fileOperations.openInputStream(headerPath)) {
+      try (final InputStream inputStream = fileOperations.openInputStream(headerPath)) {
         checkExists(headerPath);
         return headerFormat.read(inputStream);
       }
@@ -192,12 +187,8 @@ public class FileBlobStore
     @Override
     public InputStream getInputStream() {
       try {
-        // Don't auto-close this lock, since it needs to be held until the stream is closed.
-        final BlobLock lock = lockProvider.readLock(blobId);
-
         checkExists(contentPath);
-
-        return new LockHoldingInputStream(fileOperations.openInputStream(contentPath), lock);
+        return fileOperations.openInputStream(contentPath);
       }
       catch (IOException e) {
         throw new BlobStoreException(e);
@@ -219,7 +210,7 @@ public class FileBlobStore
 
     @Override
     public Date getCreationTime() {
-      try (final BlobLock lock = lockProvider.readLock(blobId)) {
+      try {
         checkExists(contentPath);
         return fileOperations.fileCreationDate(contentPath);
       }
@@ -230,7 +221,7 @@ public class FileBlobStore
 
     @Override
     public String getSHA1Hash() {
-      try (final BlobLock lock = lockProvider.readLock(blobId)) {
+      try {
         return fileOperations.computeSha1Hash(contentPath);
       }
       catch (IOException e) {
@@ -240,7 +231,7 @@ public class FileBlobStore
 
     @Override
     public long getHeaderSize() {
-      try (final BlobLock lock = lockProvider.readLock(blobId)) {
+      try {
         return fileOperations.fileSize(headerPath);
       }
       catch (IOException e) {
@@ -250,7 +241,7 @@ public class FileBlobStore
 
     @Override
     public long getContentSize() {
-      try (final BlobLock lock = lockProvider.readLock(blobId)) {
+      try {
         return fileOperations.fileSize(contentPath);
       }
       catch (IOException e) {
@@ -292,9 +283,5 @@ public class FileBlobStore
 
   public void setHeaderFormat(final HeaderFileFormat headerFormat) {
     this.headerFormat = headerFormat;
-  }
-
-  public void setLockProvider(final BlobLockProvider lockProvider) {
-    this.lockProvider = lockProvider;
   }
 }

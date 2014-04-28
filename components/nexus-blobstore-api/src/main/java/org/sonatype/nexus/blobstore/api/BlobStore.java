@@ -52,8 +52,16 @@ public interface BlobStore
    * Removes a blob from the blob store.
    *
    * @return {@code true} if the blob has been deleted, {@code false} if no blob was found by that ID.
+   * @throws BlobInUseException if the blob is currently in use by another thread
    */
   boolean delete(BlobId blobId);
+
+  /**
+   * Removes a blob from the blob store, disregarding any locking or concurrent access by other threads.
+   *
+   * @return {@code true} if the blob has been deleted, {@code false} if no blob was found by that ID.
+   */
+  boolean deleteHard(BlobId blobId);
 
   BlobStoreMetrics getMetrics();
 }

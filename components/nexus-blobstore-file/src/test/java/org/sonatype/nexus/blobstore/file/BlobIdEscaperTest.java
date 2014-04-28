@@ -10,26 +10,26 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package org.sonatype.nexus.blobstore.support;
-
-import javax.annotation.Nullable;
+package org.sonatype.nexus.blobstore.file;
 
 import org.sonatype.nexus.blobstore.api.BlobId;
+import org.sonatype.sisu.litmus.testsupport.TestSupport;
 
-/**
- * Provides read/write locks for blob store operations.
- *
- * @since 3.0
- */
-public interface BlobLockProvider
+import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
+public class BlobIdEscaperTest
+    extends TestSupport
 {
-  BlobLock exclusiveLock(BlobId blobId);
+  @Test
+  public void escapingMakesSpecialCharactersSafe() {
+    final String highlyUnsafeString = "fox..\\..bin";
+    final BlobId blobId = new BlobId(highlyUnsafeString);
 
-  /**
-   * Returns an exclusive lock if it is available, otherwise returns {@code null} without blocking.
-   */
-  @Nullable
-  BlobLock tryExclusiveLock(BlobId blobId);
+    final String safe = new BlobIdEscaper().toFileName(blobId);
 
-  BlobLock readLock(BlobId blobId);
+    assertThat(safe, equalTo("fox-----bin"));
+  }
 }

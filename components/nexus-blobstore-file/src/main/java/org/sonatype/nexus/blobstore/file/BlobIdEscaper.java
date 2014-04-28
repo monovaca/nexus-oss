@@ -10,26 +10,42 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package org.sonatype.nexus.blobstore.support;
+package org.sonatype.nexus.blobstore.file;
 
-import javax.annotation.Nullable;
+import java.util.List;
 
 import org.sonatype.nexus.blobstore.api.BlobId;
 
+import static java.util.Arrays.asList;
+
 /**
- * Provides read/write locks for blob store operations.
+ * Helps convert BlobIds to file paths safely.
  *
  * @since 3.0
  */
-public interface BlobLockProvider
+public class BlobIdEscaper
 {
-  BlobLock exclusiveLock(BlobId blobId);
+  private static final String PERIOD = "\\.";
+
+  private static final String SINGLE_BACKSLASH = "\\\\";
+
+  private static final String SINGLE_FORWARD_SLASH = "/";
 
   /**
-   * Returns an exclusive lock if it is available, otherwise returns {@code null} without blocking.
+   * Escapes directory navigation characters that might happen to occur in blob IDs.
    */
-  @Nullable
-  BlobLock tryExclusiveLock(BlobId blobId);
+  public String toFileName(BlobId blobId) {
 
-  BlobLock readLock(BlobId blobId);
+    String inString = blobId.toString();
+    return replaceAll(inString, asList(PERIOD, SINGLE_BACKSLASH, SINGLE_FORWARD_SLASH), "-");
+  }
+
+  private String replaceAll(String original, final List<String> unsafeStrings, final String replacement) {
+    for (String unsafe : unsafeStrings) {
+
+      original = original.replaceAll(unsafe, replacement);
+    }
+
+    return original;
+  }
 }

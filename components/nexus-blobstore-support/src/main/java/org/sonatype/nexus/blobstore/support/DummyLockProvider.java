@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.blobstore.support;
 
+import javax.annotation.Nullable;
+
 import org.sonatype.nexus.blobstore.api.BlobId;
 
 import org.slf4j.Logger;
@@ -29,6 +31,12 @@ public class DummyLockProvider
 
   @Override
   public BlobLock readLock(final BlobId blobId) {
+    return doNothingLock(blobId);
+  }
+
+  @Nullable
+  @Override
+  public BlobLock tryExclusiveLock(final BlobId blobId) {
     return doNothingLock(blobId);
   }
 

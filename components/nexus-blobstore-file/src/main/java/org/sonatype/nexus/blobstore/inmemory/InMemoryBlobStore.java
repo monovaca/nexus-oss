@@ -85,6 +85,11 @@ public class InMemoryBlobStore
   }
 
   @Override
+  public boolean deleteHard(final BlobId blobId) {
+    return delete(blobId);
+  }
+
+  @Override
   public BlobStoreMetrics getMetrics() {
     return null;
   }

@@ -21,10 +21,11 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import org.sonatype.nexus.blobstore.api.Blob;
 import org.sonatype.nexus.blobstore.api.BlobId;
 import org.sonatype.nexus.blobstore.api.BlobMetrics;
-import org.sonatype.nexus.blobstore.support.DummyLockProvider;
 import org.sonatype.nexus.blobstore.support.UuidBlobIdFactory;
 
 import com.google.common.collect.ImmutableMap;
@@ -59,7 +60,6 @@ public class FileBlobStoreIT
     blobStore.setFileLocationPolicy(new FlatDirectoryLocationPolicy());
     blobStore.setHeaderFormat(new JsonHeaderFormat());
     blobStore.setFileOperations(new SimpleFileOperations());
-    blobStore.setLockProvider(new DummyLockProvider());
 
     new Random().nextBytes(tinyBlob);
   }
@@ -73,7 +73,7 @@ public class FileBlobStoreIT
     final BlobId blobId = blobStore.create(data, headers).getId();
 
     final Blob blob = blobStore.get(blobId);
-    final Map<String, String> retrievedHeaders = blob.getHeaders();
+    final @Nullable Map<String, String> retrievedHeaders = blob.getHeaders();
 
     assertThat("headers", retrievedHeaders, equalTo(headers));
   }
@@ -128,7 +128,7 @@ public class FileBlobStoreIT
   private byte[] extractContentBytes(final Blob blob) throws IOException {
     try (InputStream storedData = blob.getInputStream();
          ByteArrayOutputStream b = new ByteArrayOutputStream()) {
-      ByteStreams.copy(storedData,b);
+      ByteStreams.copy(storedData, b);
       return b.toByteArray();
     }
   }

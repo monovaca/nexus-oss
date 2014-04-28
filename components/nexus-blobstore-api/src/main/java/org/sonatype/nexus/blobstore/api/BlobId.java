@@ -14,7 +14,7 @@ package org.sonatype.nexus.blobstore.api;
 
 import com.google.common.base.Preconditions;
 
-public final class BlobId
+public class BlobId
 {
   private final String id;
 

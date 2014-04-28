@@ -10,26 +10,25 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package org.sonatype.nexus.blobstore.support;
-
-import javax.annotation.Nullable;
-
-import org.sonatype.nexus.blobstore.api.BlobId;
+package org.sonatype.nexus.blobstore.api;
 
 /**
- * Provides read/write locks for blob store operations.
+ * Indicates that an operation proceed because a blob is being used concurrently, such as by another thread.
  *
  * @since 3.0
  */
-public interface BlobLockProvider
+public class BlobInUseException
+    extends BlobStoreException
 {
-  BlobLock exclusiveLock(BlobId blobId);
+  public BlobInUseException(final String message) {
+    super(message);
+  }
 
-  /**
-   * Returns an exclusive lock if it is available, otherwise returns {@code null} without blocking.
-   */
-  @Nullable
-  BlobLock tryExclusiveLock(BlobId blobId);
+  public BlobInUseException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
 
-  BlobLock readLock(BlobId blobId);
+  public BlobInUseException(final Throwable cause) {
+    super(cause);
+  }
 }
