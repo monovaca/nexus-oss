@@ -27,7 +27,7 @@ import org.sonatype.nexus.blobstore.api.BlobStoreMetrics;
 import org.sonatype.nexus.blobstore.mirror.streams.SpoolingStreamCopier;
 import org.sonatype.nexus.blobstore.mirror.streams.StreamCopier;
 import org.sonatype.nexus.blobstore.mirror.streams.TempFileSpool;
-import org.sonatype.nexus.blobstore.support.BlobLockProvider;
+import org.sonatype.nexus.blobstore.support.BlobLockFactory;
 
 import com.google.common.base.Preconditions;
 
@@ -49,7 +49,7 @@ public class MirroredBlobStore
 
   private BlobStore mirrorStore;
 
-  private BlobLockProvider lockProvider;
+  private BlobLockFactory lockProvider;
 
   public MirroredBlobStore(final String blobStoreId, final BlobStore primaryStore, final BlobStore mirrorStore) {
     this.blobStoreId = blobStoreId;
@@ -109,7 +109,7 @@ public class MirroredBlobStore
     return primaryStore.getMetrics();
   }
 
-  public void setLockProvider(final BlobLockProvider lockProvider) {
+  public void setLockProvider(final BlobLockFactory lockProvider) {
     this.lockProvider = lockProvider;
   }
 }

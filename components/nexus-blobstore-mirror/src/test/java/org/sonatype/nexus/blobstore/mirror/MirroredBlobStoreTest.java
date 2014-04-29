@@ -22,11 +22,11 @@ import java.util.Random;
 import org.sonatype.nexus.blobstore.api.Blob;
 import org.sonatype.nexus.blobstore.api.BlobStore;
 import org.sonatype.nexus.blobstore.file.FileBlobStore;
-import org.sonatype.nexus.blobstore.file.FlatDirectoryLocationPolicy;
+import org.sonatype.nexus.blobstore.file.HashingSubdirFileLocationPolicy;
 import org.sonatype.nexus.blobstore.file.JsonHeaderFormat;
 import org.sonatype.nexus.blobstore.file.SimpleFileOperations;
 import org.sonatype.nexus.blobstore.locking.LockingBlobStore;
-import org.sonatype.nexus.blobstore.support.DummyLockProvider;
+import org.sonatype.nexus.blobstore.support.DummyLockFactory;
 import org.sonatype.nexus.blobstore.support.UuidBlobIdFactory;
 import org.sonatype.sisu.litmus.testsupport.TestSupport;
 
@@ -63,7 +63,7 @@ public class MirroredBlobStoreTest
     final MirroredBlobStore mirror2 = new MirroredBlobStore("B", store4, store2);
 
     final BlobStore root = new LockingBlobStore(new MirroredBlobStore("Root", mirror1, mirror2),
-        new DummyLockProvider());
+        new DummyLockFactory());
 
     final Blob blob = root.create(new ByteArrayInputStream(testData), testHeaders);
 
@@ -76,7 +76,7 @@ public class MirroredBlobStoreTest
     final FileBlobStore store = new FileBlobStore(Files.createTempDirectory("blobstore"), null);
     store.setFileOperations(new SimpleFileOperations());
     store.setHeaderFormat(new JsonHeaderFormat());
-    store.setFileLocationPolicy(new FlatDirectoryLocationPolicy());
+    store.setFileLocationPolicy(new HashingSubdirFileLocationPolicy());
     store.setBlobIdFactory(new UuidBlobIdFactory());
     return store;
   }

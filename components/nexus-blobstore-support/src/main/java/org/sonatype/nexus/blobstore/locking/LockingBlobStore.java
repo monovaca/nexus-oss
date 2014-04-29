@@ -24,7 +24,7 @@ import org.sonatype.nexus.blobstore.api.BlobMetrics;
 import org.sonatype.nexus.blobstore.api.BlobStore;
 import org.sonatype.nexus.blobstore.api.BlobStoreMetrics;
 import org.sonatype.nexus.blobstore.support.BlobLock;
-import org.sonatype.nexus.blobstore.support.BlobLockProvider;
+import org.sonatype.nexus.blobstore.support.BlobLockFactory;
 
 /**
  * A {@link BlobStore} wrapper that ensures locks are obtained before delegating to the inner blob store.
@@ -34,10 +34,10 @@ import org.sonatype.nexus.blobstore.support.BlobLockProvider;
 public class LockingBlobStore
     extends WrappingBlobStoreSupport
 {
-  private BlobLockProvider lockProvider;
+  private BlobLockFactory lockProvider;
 
   public LockingBlobStore(final BlobStore wrappedBlobStore,
-                          final BlobLockProvider lockProvider)
+                          final BlobLockFactory lockProvider)
   {
     super(wrappedBlobStore);
     this.lockProvider = lockProvider;
@@ -45,7 +45,7 @@ public class LockingBlobStore
 
   /**
    * Note: creation is not locked, so internal cleanup processes that might be looking at half-created blobs, should
-   * definitely defer to the same {@link BlobLockProvider} as this LockingBlobStore.
+   * definitely defer to the same {@link BlobLockFactory} as this LockingBlobStore.
    */
   @Override
   public Blob create(final InputStream inputStream, final Map<String, String> headers) {

@@ -21,8 +21,10 @@ import org.sonatype.nexus.blobstore.api.BlobId;
  *
  * @since 3.0
  */
-public interface BlobLockProvider
+public interface BlobLockFactory
 {
+  BlobLock readLock(BlobId blobId);
+
   BlobLock exclusiveLock(BlobId blobId);
 
   /**
@@ -31,5 +33,5 @@ public interface BlobLockProvider
   @Nullable
   BlobLock tryExclusiveLock(BlobId blobId);
 
-  BlobLock readLock(BlobId blobId);
+
 }

@@ -19,7 +19,7 @@ import org.sonatype.nexus.blobstore.api.BlobId;
 import org.sonatype.nexus.blobstore.api.BlobInUseException;
 import org.sonatype.nexus.blobstore.api.BlobStore;
 import org.sonatype.nexus.blobstore.support.BlobLock;
-import org.sonatype.nexus.blobstore.support.BlobLockProvider;
+import org.sonatype.nexus.blobstore.support.BlobLockFactory;
 import org.sonatype.sisu.litmus.testsupport.TestSupport;
 
 import org.junit.Before;
@@ -34,7 +34,7 @@ public class LockingBlobStoreTest
 {
   private BlobStore underlyingStore;
 
-  private BlobLockProvider lockProvider;
+  private BlobLockFactory lockProvider;
 
   private BlobId blobId;
 
@@ -47,7 +47,7 @@ public class LockingBlobStoreTest
   @Before
   public void setUp() {
     underlyingStore = mock(BlobStore.class);
-    lockProvider = mock(BlobLockProvider.class);
+    lockProvider = mock(BlobLockFactory.class);
 
     blobId = mock(BlobId.class);
     underlyingBlob = mock(Blob.class);

@@ -24,10 +24,10 @@ import org.slf4j.LoggerFactory;
  *
  * @since 3.0
  */
-public class DummyLockProvider
-    implements BlobLockProvider
+public class DummyLockFactory
+    implements BlobLockFactory
 {
-  private static final Logger logger = LoggerFactory.getLogger(DummyLockProvider.class);
+  private static final Logger logger = LoggerFactory.getLogger(DummyLockFactory.class);
 
   @Override
   public BlobLock readLock(final BlobId blobId) {

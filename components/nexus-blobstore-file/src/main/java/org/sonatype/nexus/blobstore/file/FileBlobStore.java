@@ -83,6 +83,7 @@ public class FileBlobStore
       // write the headers to disk
       fileOperations.create(headerPath(blobId), toInputStream(headers));
       // write the content to disk
+      System.err.println("Writing blob "+contentPath(blobId));
       fileOperations.create(contentPath(blobId), inputStream);
 
       final FileBlob blob = new FileBlob(blobId, contentPath(blobId), headerPath(blobId));
