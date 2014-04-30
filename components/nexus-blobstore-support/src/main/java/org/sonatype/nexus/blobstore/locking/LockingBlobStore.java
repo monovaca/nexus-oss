@@ -23,8 +23,6 @@ import org.sonatype.nexus.blobstore.api.BlobInUseException;
 import org.sonatype.nexus.blobstore.api.BlobMetrics;
 import org.sonatype.nexus.blobstore.api.BlobStore;
 import org.sonatype.nexus.blobstore.api.BlobStoreMetrics;
-import org.sonatype.nexus.blobstore.support.BlobLock;
-import org.sonatype.nexus.blobstore.support.BlobLockFactory;
 
 /**
  * A {@link BlobStore} wrapper that ensures locks are obtained before delegating to the inner blob store.

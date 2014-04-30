@@ -15,7 +15,6 @@ package org.sonatype.nexus.blobstore.locking;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.sonatype.nexus.blobstore.support.BlobLock;
 import org.sonatype.nexus.util.WrappingInputStream;
 
 import com.google.common.base.Preconditions;

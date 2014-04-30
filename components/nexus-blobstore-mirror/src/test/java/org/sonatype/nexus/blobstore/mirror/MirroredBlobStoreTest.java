@@ -25,8 +25,8 @@ import org.sonatype.nexus.blobstore.file.FileBlobStore;
 import org.sonatype.nexus.blobstore.file.HashingSubdirFileLocationPolicy;
 import org.sonatype.nexus.blobstore.file.JsonHeaderFormat;
 import org.sonatype.nexus.blobstore.file.SimpleFileOperations;
+import org.sonatype.nexus.blobstore.locking.DummyLockFactory;
 import org.sonatype.nexus.blobstore.locking.LockingBlobStore;
-import org.sonatype.nexus.blobstore.support.DummyLockFactory;
 import org.sonatype.nexus.blobstore.support.UuidBlobIdFactory;
 import org.sonatype.sisu.litmus.testsupport.TestSupport;
 

@@ -27,7 +27,7 @@ import org.sonatype.nexus.blobstore.api.BlobStoreMetrics;
 import org.sonatype.nexus.blobstore.mirror.streams.SpoolingStreamCopier;
 import org.sonatype.nexus.blobstore.mirror.streams.StreamCopier;
 import org.sonatype.nexus.blobstore.mirror.streams.TempFileSpool;
-import org.sonatype.nexus.blobstore.support.BlobLockFactory;
+import org.sonatype.nexus.blobstore.locking.BlobLockFactory;
 
 import com.google.common.base.Preconditions;
 

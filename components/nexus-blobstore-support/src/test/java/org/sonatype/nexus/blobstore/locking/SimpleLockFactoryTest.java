@@ -1,4 +1,16 @@
-package org.sonatype.nexus.blobstore.support;
+/*
+ * Sonatype Nexus (TM) Open Source Version
+ * Copyright (c) 2007-2014 Sonatype, Inc.
+ * All rights reserved. Includes the third-party code listed at http://links.sonatype.com/products/nexus/oss/attributions.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License Version 1.0,
+ * which accompanies this distribution and is available at http://www.eclipse.org/legal/epl-v10.html.
+ *
+ * Sonatype Nexus (TM) Professional Version is available from Sonatype, Inc. "Sonatype" and "Sonatype Nexus" are trademarks
+ * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
+ * Eclipse Foundation. All other trademarks are the property of their respective owners.
+ */
+package org.sonatype.nexus.blobstore.locking;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,19 +20,16 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.sonatype.nexus.blobstore.api.BlobId;
 import org.sonatype.sisu.litmus.testsupport.TestSupport;
+import org.sonatype.sisu.locks.LocalResourceLockFactory;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * @since 3.0
@@ -28,18 +37,18 @@ import static org.hamcrest.Matchers.notNullValue;
 public class SimpleLockFactoryTest
     extends TestSupport
 {
-
   public static final BlobId BLOB_ID_A = new BlobId("A");
 
   public static final BlobId BLOB_ID_B = new BlobId("B");
 
-  private SimpleLockFactory factory;
+  private BlobLockFactory factory;
 
   private List<LockEvent> events;
 
   @Before
   public void setUp() {
-    factory = new SimpleLockFactory();
+    //factory = new SimpleLockFactory();
+    factory = new BlobResourceLockFactory(new LocalResourceLockFactory());
     events = Collections.synchronizedList(new ArrayList<LockEvent>());
   }
 
@@ -134,9 +143,6 @@ public class SimpleLockFactoryTest
 
     Iterator<LockEvent> eventIterator = events.iterator();
 
-    System.err.println("VALIDATING EVENT LOG");
-
-
     while (eventIterator.hasNext()) {
       final LockEvent event = eventIterator.next();
 
@@ -153,8 +159,6 @@ public class SimpleLockFactoryTest
   private synchronized void logEvent(LockEvent lockEvent) {
     log(lockEvent);
     this.events.add(lockEvent);
-    System.err.println(lockEvent);
-    System.err.flush();
   }
 
   private static class LockEvent

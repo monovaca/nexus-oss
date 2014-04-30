@@ -18,8 +18,6 @@ import org.sonatype.nexus.blobstore.api.Blob;
 import org.sonatype.nexus.blobstore.api.BlobId;
 import org.sonatype.nexus.blobstore.api.BlobInUseException;
 import org.sonatype.nexus.blobstore.api.BlobStore;
-import org.sonatype.nexus.blobstore.support.BlobLock;
-import org.sonatype.nexus.blobstore.support.BlobLockFactory;
 import org.sonatype.sisu.litmus.testsupport.TestSupport;
 
 import org.junit.Before;
