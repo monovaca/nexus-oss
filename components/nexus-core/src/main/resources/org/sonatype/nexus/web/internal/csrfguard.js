@@ -401,6 +401,13 @@
       XMLHttpRequest.tokenValue = function () {
         return "%TOKEN_VALUE%";
       };
+      XMLHttpRequest.tokenQueryParams = function () {
+        var token = XMLHttpRequest.tokenValue();
+        if (token) {
+          return '?' + XMLHttpRequest.tokenName + '=' + token;
+        }
+        return '';
+      };
 			
 			XMLHttpRequest.prototype.onsend = function(data) {
 				if(isValidUrl(this.url)) {
