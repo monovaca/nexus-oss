@@ -140,6 +140,8 @@ public class NexusClientFactoryImpl
     config.getProperties().put(ApacheHttpClient4Config.PROPERTY_CONNECTION_MANAGER,
         new PoolingClientConnectionManager(SchemeRegistryFactory.createSystemDefault()));
 
+    config.getProperties().put(ApacheHttpClient4Config.PROPERTY_DISABLE_COOKIES, Boolean.TRUE);
+
     final ApacheHttpClient4 client = ApacheHttpClient4.create(config);
 
     // set UA
