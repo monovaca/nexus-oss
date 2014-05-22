@@ -19,12 +19,14 @@ import javax.inject.Singleton;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.SessionListenerAdapter;
 import org.owasp.csrfguard.CsrfGuard;
+import org.owasp.csrfguard.CsrfGuardHttpSessionListener;
 import org.owasp.csrfguard.util.RandomGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO
+ * CSRF Guard session listener (similar to {@link CsrfGuardHttpSessionListener}). generates CSRF token upon session
+ * creation.
  *
  * @since 2.8.1
  */

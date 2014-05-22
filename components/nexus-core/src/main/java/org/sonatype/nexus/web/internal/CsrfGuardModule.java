@@ -22,7 +22,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.servlet.ServletModule;
 
 /**
- * TODO
+ * CSRF Guard Guice module.
  *
  * @since 2.8.1
  */

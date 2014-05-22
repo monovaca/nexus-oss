@@ -49,7 +49,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO
+ * CSRF Guard Filter (copy of {@link org.owasp.csrfguard.CsrfGuardFilter}). Chnaged in order to send the CSRF token as
+ * response HTTP header (on session creation), skip validation in case of new sessions and do not update session tokens
+ * as they are always valid in session.
  *
  * @since 2.8.1
  */

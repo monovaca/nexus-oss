@@ -49,6 +49,7 @@ import javax.servlet.http.HttpSession;
 
 import com.google.common.base.Throwables;
 import org.owasp.csrfguard.CsrfGuard;
+import org.owasp.csrfguard.servlet.JavaScriptServlet;
 import org.owasp.csrfguard.util.Streams;
 import org.owasp.csrfguard.util.Strings;
 import org.owasp.csrfguard.util.Writers;
@@ -58,7 +59,8 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
- * TODO
+ * CSRF Guard Servlet (copy of {@link JavaScriptServlet}). Changed in order to auto initialize {@link CsrfGuard} and
+ * do not create a session by the time the csrfguard.js is generated.
  *
  * @since 2.8.1
  */

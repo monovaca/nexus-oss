@@ -23,7 +23,7 @@ import org.owasp.csrfguard.CsrfGuardException;
 import org.owasp.csrfguard.action.AbstractAction;
 
 /**
- * TODO
+ * CSRF Guard action that sends an error response.
  *
  * @since 2.8.1
  */
