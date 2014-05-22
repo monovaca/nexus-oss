@@ -16,6 +16,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.nexus.guice.FilterChainModule;
+import org.sonatype.nexus.plugins.ui.internal.csrf.CsrfGuardFilter;
 import org.sonatype.nexus.web.internal.SecurityFilter;
 import org.sonatype.sisu.siesta.common.Resource;
 import org.sonatype.sisu.siesta.jackson.SiestaJacksonModule;
@@ -82,6 +83,7 @@ public class SiestaModule
       protected void configureServlets() {
         serve(MOUNT_POINT + "/*").with(SiestaServlet.class);
         filter(MOUNT_POINT + "/*").through(SecurityFilter.class);
+        filter(MOUNT_POINT + "/*").through(CsrfGuardFilter.class);
       }
     });
 

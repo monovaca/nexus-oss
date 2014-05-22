@@ -15,6 +15,7 @@ package org.sonatype.nexus.restlet1x.internal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.sonatype.nexus.plugins.ui.internal.csrf.CsrfGuardFilter;
 import org.sonatype.nexus.web.internal.NexusGuiceFilter;
 import org.sonatype.nexus.web.internal.SecurityFilter;
 
@@ -34,6 +35,7 @@ class RestletServletModule
 
     serve("/service/local/*").with(RestletServlet.class, nexusRestletServletInitParams());
     filter("/service/local/*").through(SecurityFilter.class);
+    filter("/service/local/*").through(CsrfGuardFilter.class);
   }
 
   private Map<String, String> nexusRestletServletInitParams() {

@@ -31,6 +31,17 @@ define('Nexus/configuration/Ajax', ['extjs'], function(Ext) {
     }
   });
 
+  Ext.Ajax.on('requestcomplete', function (connection, response) {
+    if (response && Ext.isFunction(response.getResponseHeader)) {
+      var tokenValue = response.getResponseHeader(XMLHttpRequest.tokenName);
+      if (tokenValue) {
+        XMLHttpRequest.tokenValue = function () {
+          return tokenValue;
+        };
+      }
+    }
+  });
+
   // Set default HTTP headers
   Ext.lib.Ajax.defaultPostHeader = 'application/json; charset=utf-8';
 });
