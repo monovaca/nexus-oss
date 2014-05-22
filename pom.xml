@@ -546,15 +546,15 @@
               <exclude>**/nexus-ui-extjs3-plugin/src/main/resources/static/ext-3.*/**</exclude>
               <exclude>**/nexus-ui-extjs3-plugin/src/main/resources/static/js/ext/ux/**</exclude>
               <exclude>**/nexus-ui-extjs3-plugin/src/main/resources/static/css/ext/ux/**</exclude>
-              <exclude>**/nexus-ui-extjs3-plugin/src/main/resources/org/sonatype/nexus/plugins/ui/internal/csrf/**</exclude>
               <exclude>**/nexus-ui-extjs3-plugin/src/main/js-lib/**</exclude>
+              <exclude>**/nexus-core/src/main/resources/org/sonatype/nexus/web/internal/csrfguard.*</exclude>
 
               <!--
               Excludes for specific classes which have compatible, yet different licences.
               -->
               <exclude>**/nexus-ldap-common/**/org/sonatype/security/ldap/dao/password/hash/MD5Crypt.java</exclude>
-              <exclude>**/nexus-ui-extjs3-plugin/**/org/sonatype/nexus/plugins/ui/internal/csrf/CsrfGuardFilter.java</exclude>
-              <exclude>**/nexus-ui-extjs3-plugin/**/org/sonatype/nexus/plugins/ui/internal/csrf/CsrfGuardServlet.java</exclude>
+              <exclude>**/nexus-core/**/org/sonatype/nexus/web/internal/CsrfGuardFilter.java</exclude>
+              <exclude>**/nexus-core/**/org/sonatype/nexus/web/internal/CsrfGuardServlet.java</exclude>
             </excludes>
           </configuration>
         </plugin>

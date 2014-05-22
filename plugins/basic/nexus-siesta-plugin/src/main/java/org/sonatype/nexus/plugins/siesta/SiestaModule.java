@@ -16,7 +16,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.nexus.guice.FilterChainModule;
-import org.sonatype.nexus.plugins.ui.internal.csrf.CsrfGuardFilter;
+import org.sonatype.nexus.web.internal.CsrfGuardFilter;
 import org.sonatype.nexus.web.internal.SecurityFilter;
 import org.sonatype.sisu.siesta.common.Resource;
 import org.sonatype.sisu.siesta.jackson.SiestaJacksonModule;
