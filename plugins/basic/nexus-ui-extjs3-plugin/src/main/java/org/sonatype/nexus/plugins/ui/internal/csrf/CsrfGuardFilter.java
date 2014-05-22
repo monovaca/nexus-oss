@@ -70,6 +70,8 @@ public class CsrfGuardFilter
       HttpServletRequest httpRequest = (HttpServletRequest) request;
       HttpSession session = httpRequest.getSession(false);
 
+      log.debug("Analyzing request {}", httpRequest.getRequestURI());
+
       if (session == null) {
         // If there is no session, no harm can be done
         filterChain.doFilter(httpRequest, response);
@@ -77,24 +79,23 @@ public class CsrfGuardFilter
       }
 
       if (session.isNew()) {
+        // if session is new put the token in response and skip verification as for sure it does not have a valid token
         CsrfGuard csrfGuard = CsrfGuard.getInstance();
         ((HttpServletResponse) response).setHeader(
             csrfGuard.getTokenName(),
             (String) session.getAttribute(csrfGuard.getSessionKey())
         );
+        filterChain.doFilter(httpRequest, response);
+        return;
       }
 
       CsrfGuard csrfGuard = CsrfGuard.getInstance();
-      log.debug("Analyzing request {}", httpRequest.getRequestURI());
 
       InterceptRedirectResponse httpResponse = new InterceptRedirectResponse(
           (HttpServletResponse) response, httpRequest, csrfGuard
       );
 
-      if (session.isNew() && csrfGuard.isUseNewTokenLandingPage()) {
-        csrfGuard.writeLandingPage(httpRequest, httpResponse);
-      }
-      else if (csrfGuard.isValidRequest(httpRequest, httpResponse)) {
+      if (csrfGuard.isValidRequest(httpRequest, httpResponse)) {
         filterChain.doFilter(httpRequest, httpResponse);
       }
       else {
