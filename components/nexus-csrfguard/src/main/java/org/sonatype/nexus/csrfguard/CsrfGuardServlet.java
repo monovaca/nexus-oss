@@ -59,8 +59,10 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
- * CSRF Guard Servlet (copy of {@link JavaScriptServlet}). Changed in order to auto initialize {@link CsrfGuard} and
- * do not create a session by the time the csrfguard.js is generated.
+ * CSRF Guard Servlet (copy of {@link JavaScriptServlet}).
+ *
+ * Changed in order to auto initialize {@link CsrfGuard} and do not create a session by the time
+ * {@code csrfguard.js} is generated.
  *
  * @since 2.8.1
  */
