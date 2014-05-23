@@ -11,7 +11,7 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 
-package org.sonatype.nexus.web.internal;
+package org.sonatype.nexus.csrfguard;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

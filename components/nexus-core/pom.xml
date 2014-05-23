@@ -321,8 +321,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.owasp</groupId>
-      <artifactId>csrfguard</artifactId>
+      <groupId>org.sonatype.nexus</groupId>
+      <artifactId>nexus-csrfguard</artifactId>
     </dependency>
 
     <!-- Testing -->

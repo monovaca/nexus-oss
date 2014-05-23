@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.sonatype.nexus.web.internal;
+package org.sonatype.nexus.csrfguard;
 
 import java.io.IOException;
 

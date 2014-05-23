@@ -16,6 +16,7 @@ package org.sonatype.nexus.web.internal;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.sonatype.nexus.csrfguard.CsrfGuardServlet;
 import org.sonatype.nexus.guice.FilterChainModule;
 
 import com.google.inject.AbstractModule;
@@ -49,7 +50,6 @@ public class CsrfGuardModule
       protected void configure() {
         addFilterChain(MOUNT_POINT, "noSessionCreation,authcBasic");
       }
-
     });
   }
 }
