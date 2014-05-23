@@ -32,7 +32,6 @@ public class CoreLogConfigurationCustomizer
 
   @Override
   public void customize(final Configuration configuration) {
-
     // non Nexus loggers
     configuration.setLoggerLevel("org.restlet", LoggerLevel.INFO);
     configuration.setLoggerLevel("org.apache.commons", LoggerLevel.WARN);
@@ -64,6 +63,9 @@ public class CoreLogConfigurationCustomizer
     configuration.setLoggerLevel("org.sonatype.nexus.proxy", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.tasks", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.sonatype.nexus.threads", LoggerLevel.DEFAULT);
+
+    // nexus-csrfguard loggers
+    configuration.setLoggerLevel("org.sonatype.nexus.csrfguard", LoggerLevel.DEFAULT);
     configuration.setLoggerLevel("org.owasp.csrfguard", LoggerLevel.DEFAULT);
   }
 

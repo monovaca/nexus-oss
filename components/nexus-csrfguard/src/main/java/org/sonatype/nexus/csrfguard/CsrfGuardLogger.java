@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 public class CsrfGuardLogger
     implements ILogger
 {
-
   private static final Logger log = LoggerFactory.getLogger(CsrfGuard.class);
 
   @Override
