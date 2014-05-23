@@ -82,7 +82,7 @@ NX.define('Nexus.util.DownloadHelper', {
     // TODO: Form method could be handy to GET/POST w/params vs link to just GET?
 
     // open new window in hidden download-from to initiate download
-    win = NX.global.open(url, me.windowName);
+    win = NX.global.open(url + (url.indexOf('?') > 0 ? '&' : '?') + XMLHttpRequest.tokenQueryParams(), me.windowName);
     if (win == null) {
       alert('Download window pop-up was blocked!');
       return false;

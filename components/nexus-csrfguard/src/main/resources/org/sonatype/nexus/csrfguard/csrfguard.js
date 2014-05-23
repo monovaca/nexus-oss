@@ -396,6 +396,7 @@
 				hijackStandard();
 			}
 
+      // Sonatype changes: Code bellow are changes required for deferred pushing of token after login
       XMLHttpRequest.requestedWith = "%X_REQUESTED_WITH%";
       XMLHttpRequest.tokenName = "%TOKEN_NAME%";
       XMLHttpRequest.tokenValue = function () {
@@ -404,10 +405,11 @@
       XMLHttpRequest.tokenQueryParams = function () {
         var token = XMLHttpRequest.tokenValue();
         if (token) {
-          return '?' + XMLHttpRequest.tokenName + '=' + token;
+          return XMLHttpRequest.tokenName + '=' + token;
         }
         return '';
       };
+      // Sonatype changes: end
 			
 			XMLHttpRequest.prototype.onsend = function(data) {
 				if(isValidUrl(this.url)) {

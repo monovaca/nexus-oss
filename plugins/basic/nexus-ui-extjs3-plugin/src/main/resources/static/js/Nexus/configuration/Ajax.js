@@ -22,6 +22,12 @@ define('Nexus/configuration/Ajax', ['extjs'], function(Ext) {
 
   Ext.Ajax.on('requestexception', function(connection, response) {
     if ( response && Ext.isFunction(response.getResponseHeader) ) { // timeouts/socket closed response does not have this method(?)
+      var tokenValue = response.getResponseHeader(XMLHttpRequest.tokenName);
+      if (tokenValue) {
+        XMLHttpRequest.tokenValue = function () {
+          return tokenValue;
+        };
+      }
       var contentType = response.getResponseHeader('Content-Type');
       if ( contentType === 'application/vnd.siesta-error-v1+json') {
         response.siestaError = Ext.decode(response.responseText);

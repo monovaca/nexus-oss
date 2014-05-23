@@ -84,7 +84,6 @@ public class SiestaModule
       protected void configureServlets() {
         serve(MOUNT_POINT + "/*").with(SiestaServlet.class);
         filter(MOUNT_POINT + "/*").through(SecurityFilter.class);
-        filter(MOUNT_POINT + "/*").through(CsrfGuardFilter.class);
       }
     });
 
@@ -92,7 +91,7 @@ public class SiestaModule
     {
       @Override
       protected void configure() {
-        addFilterChain(MOUNT_POINT + "/**", "noSessionCreation,authcBasic");
+        addFilterChain(MOUNT_POINT + "/**", "noSessionCreation,authcBasic,csrfToken");
       }
 
     });

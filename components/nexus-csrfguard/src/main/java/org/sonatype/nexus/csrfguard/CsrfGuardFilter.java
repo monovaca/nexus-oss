@@ -29,20 +29,14 @@
 
 package org.sonatype.nexus.csrfguard;
 
-import java.io.IOException;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.shiro.web.servlet.AdviceFilter;
 import org.owasp.csrfguard.CsrfGuard;
 import org.owasp.csrfguard.http.InterceptRedirectResponse;
 import org.slf4j.Logger;
@@ -56,18 +50,18 @@ import org.slf4j.LoggerFactory;
  *
  * @since 2.8.1
  */
-@Named
-@Singleton
 public class CsrfGuardFilter
-    implements Filter
+    extends AdviceFilter
 {
 
   private static final Logger log = LoggerFactory.getLogger(CsrfGuard.class);
 
+  public static final String SKIP_VALIDATION = CsrfGuardFilter.class.getSimpleName() + ".skipValidation";
+
+  private static final String LAST_SENT_CSRF_TOKEN = CsrfGuardFilter.class.getSimpleName() + ".lastSentCsrfToken";
+
   @Override
-  public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain filterChain)
-      throws IOException, ServletException
-  {
+  protected boolean preHandle(final ServletRequest request, final ServletResponse response) throws Exception {
     /** only work with HttpServletRequest objects **/
     if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
       HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -75,49 +69,45 @@ public class CsrfGuardFilter
 
       log.debug("Analyzing request {}", httpRequest.getRequestURI());
 
-      if (session == null) {
-        // If there is no session, no harm can be done
-        filterChain.doFilter(httpRequest, response);
-        return;
-      }
-
-      if (session.isNew()) {
-        // if session is new put the token in response and skip verification as for sure it does not have a valid token
+      if (session != null) {
         CsrfGuard csrfGuard = CsrfGuard.getInstance();
-        ((HttpServletResponse) response).setHeader(
-            csrfGuard.getTokenName(),
-            (String) session.getAttribute(csrfGuard.getSessionKey())
-        );
-        filterChain.doFilter(httpRequest, response);
-        return;
-      }
+        String currentToken = (String) session.getAttribute(csrfGuard.getSessionKey());
+        String lastSentToken = (String) session.getAttribute(LAST_SENT_CSRF_TOKEN);
 
-      CsrfGuard csrfGuard = CsrfGuard.getInstance();
-
-      InterceptRedirectResponse httpResponse = new InterceptRedirectResponse(
-          (HttpServletResponse) response, httpRequest, csrfGuard
-      );
-
-      if (csrfGuard.isValidRequest(httpRequest, httpResponse)) {
-        filterChain.doFilter(httpRequest, httpResponse);
-      }
-      else {
-        /** invalid request - nothing to do - actions already executed **/
+        if (currentToken != null && !currentToken.equals(lastSentToken)) {
+          ((HttpServletResponse) response).setHeader(csrfGuard.getTokenName(), currentToken);
+          session.setAttribute(LAST_SENT_CSRF_TOKEN, currentToken);
+          log.debug("Sending token {} back to client", currentToken);
+        }
+        else {
+          Object skipValidation = request.getAttribute(SKIP_VALIDATION);
+          if (!(skipValidation != null && skipValidation instanceof Boolean && (Boolean) skipValidation)) {
+            log.debug("Validating request {}", httpRequest.getRequestURI());
+            return csrfGuard.isValidRequest(httpRequest, (HttpServletResponse) response);
+          }
+        }
       }
     }
     else {
       log.warn("CsrfGuard does not know how to work with requests of class {}", request.getClass().getName());
-      filterChain.doFilter(request, response);
     }
+    return true;
   }
 
   @Override
-  public void init(final FilterConfig filterConfig) throws ServletException {
-    // do nothing
-  }
-
-  @Override
-  public void destroy() {
-    // do nothing
+  protected void executeChain(final ServletRequest request, final ServletResponse response, final FilterChain chain)
+      throws Exception
+  {
+    ServletResponse wrappedResponse = response;
+    if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
+      HttpSession session = ((HttpServletRequest) request).getSession(false);
+      CsrfGuard csrfGuard = CsrfGuard.getInstance();
+      if (session != null && session.getAttribute(csrfGuard.getSessionKey()) != null) {
+        wrappedResponse = new InterceptRedirectResponse(
+            (HttpServletResponse) response, (HttpServletRequest) request, csrfGuard
+        );
+      }
+    }
+    super.executeChain(request, wrappedResponse, chain);
   }
 }

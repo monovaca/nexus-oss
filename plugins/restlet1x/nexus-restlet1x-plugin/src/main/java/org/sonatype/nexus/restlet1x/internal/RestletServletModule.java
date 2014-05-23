@@ -36,7 +36,6 @@ class RestletServletModule
 
     serve("/service/local/*").with(RestletServlet.class, nexusRestletServletInitParams());
     filter("/service/local/*").through(SecurityFilter.class);
-    filter("/service/local/*").through(CsrfGuardFilter.class);
   }
 
   private Map<String, String> nexusRestletServletInitParams() {
