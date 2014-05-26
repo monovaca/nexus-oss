@@ -397,33 +397,29 @@
 			}
 
       // Sonatype changes: Code bellow are changes required for deferred pushing of token after login
-      XMLHttpRequest.requestedWith = "%X_REQUESTED_WITH%";
       XMLHttpRequest.tokenName = "%TOKEN_NAME%";
       XMLHttpRequest.tokenValue = function () {
         return "%TOKEN_VALUE%";
-      };
-      XMLHttpRequest.tokenQueryParams = function () {
-        var token = XMLHttpRequest.tokenValue();
-        if (token) {
-          return XMLHttpRequest.tokenName + '=' + token;
-        }
-        return '';
       };
       // Sonatype changes: end
 			
 			XMLHttpRequest.prototype.onsend = function(data) {
 				if(isValidUrl(this.url)) {
 					this.setRequestHeader("X-Requested-With", "%X_REQUESTED_WITH%");
+          // Sonatype changes: use function to get token value
 					this.setRequestHeader("%TOKEN_NAME%", XMLHttpRequest.tokenValue());
+          // Sonatype changes: end
 				}
 			};
 		}
 		
 		/** update nodes in DOM after load **/
 		addEvent(window,'unload',EventCache.flush);
+    // Sonatype changes: use function to get token value
 		addEvent(window,'load', function() {
 			injectTokens("%TOKEN_NAME%", XMLHttpRequest.tokenValue());
 		});
+    // Sonatype changes: end
 	} else {
 		alert("OWASP CSRFGuard JavaScript was included from within an unauthorized domain!");
 	}
