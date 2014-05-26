@@ -81,8 +81,11 @@ NX.define('Nexus.util.DownloadHelper', {
     // TODO: ... to make use of html5 download attribute and avoid needing to _open_ more windows
     // TODO: Form method could be handy to GET/POST w/params vs link to just GET?
 
+    if (XMLHttpRequest.tokenName) {
+      url += (url.indexOf('?') > 0 ? '&' : '?') + XMLHttpRequest.tokenName + '=' + XMLHttpRequest.tokenValue();
+    }
     // open new window in hidden download-from to initiate download
-    win = NX.global.open(url + (url.indexOf('?') > 0 ? '&' : '?') + XMLHttpRequest.tokenQueryParams(), me.windowName);
+    win = NX.global.open(url, me.windowName);
     if (win == null) {
       alert('Download window pop-up was blocked!');
       return false;
