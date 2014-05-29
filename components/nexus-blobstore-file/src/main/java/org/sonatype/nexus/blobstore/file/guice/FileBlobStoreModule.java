@@ -26,13 +26,13 @@ import org.sonatype.nexus.blobstore.id.UuidBlobIdFactory;
 import org.sonatype.nexus.configuration.application.ApplicationDirectories;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
 import com.google.inject.name.Names;
-import io.kazuki.v0.store.easy.EasyKeyValueStoreModule;
+import io.kazuki.v0.store.guice.KazukiModule;
 import io.kazuki.v0.store.jdbi.JdbiDataSourceConfiguration;
 import io.kazuki.v0.store.keyvalue.KeyValueStoreConfiguration;
-import io.kazuki.v0.store.lifecycle.LifecycleModule;
 import io.kazuki.v0.store.sequence.SequenceServiceConfiguration;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -58,14 +58,11 @@ public class FileBlobStoreModule
     bind(JdbiDataSourceConfiguration.class).annotatedWith(Names.named(FILE_BLOB_STORE))
         .toProvider(JdbiConfigurationProvider.class).in(Scopes.SINGLETON);
 
-    // Kazuki lifecycle management
-    install(new LifecycleModule(FILE_BLOB_STORE));
-
-    // Kazuki key-value store
-    install(new EasyKeyValueStoreModule(FILE_BLOB_STORE, null)
-            .withSequenceConfig(getSequenceServiceConfiguration())
-            .withKeyValueStoreConfig(getKeyValueStoreConfiguration())
-    );
+    install(new KazukiModule.Builder(FILE_BLOB_STORE)
+            .withJdbiConfiguration(FILE_BLOB_STORE, Key.get(JdbiDataSourceConfiguration.class, Names.named(FILE_BLOB_STORE)))
+            .withSequenceServiceConfiguration(FILE_BLOB_STORE, getSequenceServiceConfiguration())
+            .withKeyValueStoreConfiguration(FILE_BLOB_STORE, getKeyValueStoreConfiguration())
+            .build());
   }
 
   private SequenceServiceConfiguration getSequenceServiceConfiguration() {
