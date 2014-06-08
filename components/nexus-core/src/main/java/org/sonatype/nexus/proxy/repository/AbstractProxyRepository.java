@@ -68,6 +68,7 @@ import org.sonatype.nexus.util.FibonacciNumberSequence;
 import org.sonatype.nexus.util.NumberSequence;
 import org.sonatype.nexus.util.SystemPropertiesHelper;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import org.codehaus.plexus.util.ExceptionUtils;
 import org.codehaus.plexus.util.StringUtils;
@@ -1498,9 +1499,19 @@ public abstract class AbstractProxyRepository
     // If entire proxy cache has been invalidated, lazily expire item
     String itemInvalidationToken = item.getRepositoryItemAttributes().get(PROXY_CACHE_INVALIDATION_TOKEN_KEY);
     if (!StringUtils.equals(proxyCacheInvalidationToken, itemInvalidationToken)) {
+      log.debug("Item treated as expired due to proxy-cache invalidation token mismatch: {} != {}; item: {}",
+          proxyCacheInvalidationToken, itemInvalidationToken, item);
       // if item does not carry the current proxy cache invalidation token, then treat it as expired
       item.setExpired(true);
       item.getRepositoryItemAttributes().put(PROXY_CACHE_INVALIDATION_TOKEN_KEY, proxyCacheInvalidationToken);
+
+      // save attributes, surrounding usage of item reloads attributes (over and over for some reason)
+      try {
+        getAttributesHandler().storeAttributes(item);
+      }
+      catch (IOException e) {
+        throw Throwables.propagate(e);
+      }
       return true;
     }
 
