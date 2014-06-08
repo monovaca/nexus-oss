@@ -296,7 +296,7 @@ public abstract class AbstractProxyRepository
     // special handling for expiration for entire collection
     if (RepositoryItemUid.PATH_ROOT.equals(request.getRequestPath())) {
       // generate a unique token for this invalidation request
-      proxyCacheInvalidationToken = String.format("%s.%s", System.currentTimeMillis(), System.nanoTime());
+      proxyCacheInvalidationToken = String.valueOf(System.nanoTime());
       log.debug("Proxy cache marked as invalid for repository {}, token: {}", this, proxyCacheInvalidationToken);
 
       // assume the cache will alter, we can not know for sure w/o expensive walking operation
